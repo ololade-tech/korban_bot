@@ -7,37 +7,67 @@ import ControlPanel from '@/components/ControlPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePrivy } from '@privy-io/react-auth';
 import { useState, useEffect } from 'react';
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { ShieldCheck } from 'lucide-react';
+import { initializeAgent } from '@/lib/agent-setup';
 
 export default function Dashboard() {
-  const { logout } = usePrivy();
+  const { logout, user } = usePrivy();
   const [activeSymbol] = useState('HYPE');
   const price = useHyperliquidPrice(activeSymbol);
   
   const latestSignal = useQuery(api.trades.getLatestSignal, { symbol: activeSymbol });
+  const saveAgentKey = useMutation(api.trades.saveAgentKey);
   const [chartData, setChartData] = useState<any[]>([]);
+
+  // One-Click Authorization Flow
+  const setupAgent = async () => {
+    if (!user?.wallet?.address) return;
+    
+    try {
+      // 1. Generate Agent & Request Signature from the connected wallet
+      const agentData = await initializeAgent(user.wallet.address, (window as any).ethereum);
+      
+      // 2. Push the Agent's trading key to the bot backend
+      await saveAgentKey({
+        address: agentData.agentAddress,
+        privateKey: agentData.agentPrivateKey
+      });
+
+      alert("SYSTEM INITIALIZED: Korban AI is now authorized to trade on your behalf.");
+    } catch (err) {
+      console.error("Setup failed", err);
+      alert("Authorization failed. Please ensure your wallet is connected.");
+    }
+  };
 
   // Fetch real candle data from Hyperliquid
   useEffect(() => {
     async function fetchCandles() {
-      const res = await fetch("https://api.hyperliquid.xyz/info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "candleSnapshot",
-          req: { coin: activeSymbol, interval: "15m", startTime: Date.now() - 24 * 60 * 60 * 1000 }
-        })
-      });
-      const data = await res.json();
-      const formatted = data.map((c: any) => ({
-        time: (c.t / 1000) as any,
-        open: parseFloat(c.o),
-        high: parseFloat(c.h),
-        low: parseFloat(c.l),
-        close: parseFloat(c.c)
-      })).sort((a: any, b: any) => a.time - b.time);
-      setChartData(formatted);
+      try {
+        const res = await fetch("https://api.hyperliquid.xyz/info", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "candleSnapshot",
+            req: { coin: activeSymbol, interval: "15m", startTime: Date.now() - 24 * 60 * 60 * 1000 }
+          })
+        });
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const formatted = data.map((c: any) => ({
+            time: (c.t / 1000) as any,
+            open: parseFloat(c.o),
+            high: parseFloat(c.h),
+            low: parseFloat(c.l),
+            close: parseFloat(c.c)
+          })).sort((a: any, b: any) => a.time - b.time);
+          setChartData(formatted);
+        }
+      } catch (e) {
+        console.error("Candle fetch failed", e);
+      }
     }
     fetchCandles();
     const interval = setInterval(fetchCandles, 60000);
@@ -102,26 +132,27 @@ export default function Dashboard() {
             )}
           </div>
 
-  // One-Click Authorization Flow
-  const setupAgent = async () => {
-    if (!user?.wallet?.address) return;
-    
-    try {
-      // 1. Generate Agent & Request Signature from the connected wallet
-      const agentData = await initializeAgent(user.wallet.address, (window as any).ethereum);
-      
-      // 2. Push the Agent's trading key to the bot backend
-      await saveAgentKey({
-        address: agentData.agentAddress,
-        privateKey: agentData.agentPrivateKey
-      });
+          <div className="flex flex-col gap-4">
+            <ControlPanel />
+            
+            <div className="bg-orange-500/10 border border-orange-500/30 p-6 rounded-3xl flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="text-orange-500" size={20} />
+                <h3 className="font-black uppercase tracking-widest text-sm text-white">Security: One-Click Agent</h3>
+              </div>
+              <p className="text-[10px] text-zinc-400 leading-relaxed font-medium">
+                To trade autonomously, Korban creates a secure "Agent Wallet" inside your browser. This agent can ONLY trade—it has NO withdrawal permissions.
+              </p>
+              <button 
+                onClick={setupAgent}
+                className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-black font-black uppercase tracking-widest text-xs rounded-xl transition-all shadow-lg shadow-orange-500/20"
+              >
+                Authorize Agent
+              </button>
+            </div>
 
-      alert("SYSTEM INITIALIZED: Korban AI is now authorized to trade on your behalf.");
-    } catch (err) {
-      console.error("Setup failed", err);
-      alert("Authorization failed. Please ensure your wallet is connected.");
-    }
-  };
+            <h2 className="text-sm font-black uppercase tracking-widest text-zinc-500 mt-4">AI Intelligence</h2>
+            <div className="bg-zinc-900/30 border border-zinc-800 rounded-3xl p-6 flex-1 min-h-[300px] overflow-y-auto">
                <div className="flex items-center gap-2 mb-6">
                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                  <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Kimi Neural Engine Active</span>
