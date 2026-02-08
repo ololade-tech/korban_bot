@@ -2,6 +2,7 @@
 
 import { usePrivy } from '@privy-io/react-auth';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function Home() {
   const { login, logout, authenticated, user } = usePrivy();
@@ -28,38 +29,41 @@ export default function Home() {
           Elite AI-Powered DEX Execution on <span className="text-orange-400">Hyperliquid</span>.
         </p>
 
-        import Link from 'next/link';
-// ... rest of the imports
+        {!authenticated ? (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={login}
+            className="px-12 py-4 bg-orange-500 hover:bg-orange-600 text-black rounded-xl font-black transition-all shadow-[0_0_40px_rgba(249,115,22,0.2)]"
+          >
+            ENTER THE HUB
+          </motion.button>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center gap-6"
+          >
+            <div className="px-6 py-2 rounded-full border border-orange-500/30 bg-orange-500/5 text-orange-400 font-mono text-sm">
+              CONNECTED: {user?.wallet?.address?.slice(0, 6)}...{user?.wallet?.address?.slice(-4)}
+            </div>
 
-// Inside the button section:
-{!authenticated ? (
-  // ... existing login button
-) : (
-  <motion.div 
-    initial={{ opacity: 0, scale: 0.95 }}
-    animate={{ opacity: 1, scale: 1 }}
-    className="flex flex-col items-center gap-6"
-  >
-    <div className="px-6 py-2 rounded-full border border-orange-500/30 bg-orange-500/5 text-orange-400 font-mono text-sm">
-      CONNECTED: {user?.wallet?.address?.slice(0, 6)}...{user?.wallet?.address?.slice(-4)}
-    </div>
-
-    <div className="mt-4 p-8 border border-gray-800 rounded-[2rem] bg-zinc-900/30 backdrop-blur-3xl flex flex-col items-center gap-6 w-full min-w-[320px]">
-       <Link 
-        href="/dashboard"
-        className="px-10 py-3 bg-white text-black rounded-xl font-black text-sm uppercase tracking-widest hover:bg-orange-500 transition-colors"
-       >
-         Open Dashboard
-       </Link>
-       <button
-        onClick={logout}
-        className="text-gray-600 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
-      >
-        Terminate Session
-      </button>
-    </div>
-  </motion.div>
-)}
+            <div className="mt-4 p-8 border border-gray-800 rounded-[2rem] bg-zinc-900/30 backdrop-blur-3xl flex flex-col items-center gap-6 w-full min-w-[320px]">
+               <Link 
+                href="/dashboard"
+                className="px-10 py-3 bg-white text-black rounded-xl font-black text-sm uppercase tracking-widest hover:bg-orange-500 transition-colors"
+               >
+                 Open Dashboard
+               </Link>
+               <button
+                onClick={logout}
+                className="text-gray-600 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
+              >
+                Terminate Session
+              </button>
+            </div>
+          </motion.div>
+        )}
       </div>
     </main>
   );
