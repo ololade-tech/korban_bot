@@ -102,10 +102,24 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="flex flex-col gap-4">
-            <ControlPanel />
-            <h2 className="text-sm font-black uppercase tracking-widest text-zinc-500">AI Intelligence</h2>
-            <div className="bg-zinc-900/30 border border-zinc-800 rounded-3xl p-6 flex-1 min-h-[300px] overflow-y-auto">
+// Advanced Hybrid Wallet & Agent Logic
+const setupAgent = async () => {
+  try {
+    // 1. Create the Agent Locally
+    const agent = await initializeAgent(user.wallet.address, signer);
+    
+    // 2. Securely store the Agent Key in Convex
+    // This allows the bot to trade 24/7 without user intervention
+    await saveAgentKey({
+      address: agent.agentAddress,
+      privateKey: agent.agentPrivateKey,
+    });
+    
+    alert("KORBAN AGENT AUTHORIZED: System now in full autonomous mode.");
+  } catch (err) {
+    console.error("Authorization failed", err);
+  }
+};
                <div className="flex items-center gap-2 mb-6">
                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                  <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Kimi Neural Engine Active</span>
