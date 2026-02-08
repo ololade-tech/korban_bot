@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "hyperliquid-trading": {
+      "version": "1.0.0",
+      "installedAt": 1770566983719
+    },
+    "hyperliquid-cli": {
+      "version": "1.0.3",
+      "installedAt": 1770566985741
+    },
+    "crypto-price": {
+      "version": "0.2.2",
+      "installedAt": 1770566988138
+    },
+    "gemini": {
+      "version": "1.0.0",
+      "installedAt": 1770567000290
+    },
+    "summarize": {
+      "version": "1.0.0",
+      "installedAt": 1770567001977
+    },
+    "session-logs": {
+      "version": "1.0.0",
+      "installedAt": 1770567003961
+    },
+    "model-usage": {
+      "version": "1.0.0",
+      "installedAt": 1770567005797
+    },
+    "gog": {
+      "version": "1.0.0",
+      "installedAt": 1770567007459
+    },
+    "goplaces": {
+      "version": "1.0.0",
+      "installedAt": 1770567009316
+    }
+  }
+}
