@@ -13,8 +13,6 @@ Set these in your [Convex Dashboard](https://dashboard.convex.dev) under **Setti
 | :--- | :--- | :--- |
 | `KIMI_API_KEY` | Your Moonshot/Kimi API key. | [Moonshot API Platform](https://platform.moonshot.cn/) |
 | `HL_PRIVATE_KEY` | Your Hyperliquid **Agent** Private Key. | [Hyperliquid API Docs](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/nonces-and-api-wallets#api-wallets) |
-| `TELEGRAM_BOT_TOKEN` | Bot API Token for alerts. | [@BotFather](https://t.me/botfather) |
-| `TELEGRAM_CHAT_ID` | Your unique numerical Chat ID. | [@userinfobot](https://t.me/userinfobot) |
 
 ### 2. Frontend (Next.js)
 Set these in your **Vercel Dashboard** or `.env.local`:
