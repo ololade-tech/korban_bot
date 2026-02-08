@@ -102,24 +102,26 @@ export default function Dashboard() {
             )}
           </div>
 
-// Advanced Hybrid Wallet & Agent Logic
-const setupAgent = async () => {
-  try {
-    // 1. Create the Agent Locally
-    const agent = await initializeAgent(user.wallet.address, signer);
+  // One-Click Authorization Flow
+  const setupAgent = async () => {
+    if (!user?.wallet?.address) return;
     
-    // 2. Securely store the Agent Key in Convex
-    // This allows the bot to trade 24/7 without user intervention
-    await saveAgentKey({
-      address: agent.agentAddress,
-      privateKey: agent.agentPrivateKey,
-    });
-    
-    alert("KORBAN AGENT AUTHORIZED: System now in full autonomous mode.");
-  } catch (err) {
-    console.error("Authorization failed", err);
-  }
-};
+    try {
+      // 1. Generate Agent & Request Signature from the connected wallet
+      const agentData = await initializeAgent(user.wallet.address, (window as any).ethereum);
+      
+      // 2. Push the Agent's trading key to the bot backend
+      await saveAgentKey({
+        address: agentData.agentAddress,
+        privateKey: agentData.agentPrivateKey
+      });
+
+      alert("SYSTEM INITIALIZED: Korban AI is now authorized to trade on your behalf.");
+    } catch (err) {
+      console.error("Setup failed", err);
+      alert("Authorization failed. Please ensure your wallet is connected.");
+    }
+  };
                <div className="flex items-center gap-2 mb-6">
                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                  <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Kimi Neural Engine Active</span>

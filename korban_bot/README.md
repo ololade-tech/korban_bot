@@ -2,41 +2,34 @@
 
 Professional Smart Money Concepts (SMC) & ICT trading bot on Hyperliquid.
 
-## 🤖 Project Setup & Environment Variables
+## 🚀 Seamless "One-Click" Setup
 
-To get **Korban Bot** running in production (Convex + Vercel), you must configure the following environment variables.
+**Korban Bot** is designed to work just like the native Hyperliquid interface. There is **no need** for you to manage complex private keys manually.
 
-### 1. Convex Backend (Neural Engine)
-Set these in your [Convex Dashboard](https://dashboard.convex.dev) under **Settings > Environment Variables**:
+### ⚡ The User Flow:
+1.  **Connect**: User logs in with any wallet via **Privy**.
+2.  **Authorize**: User clicks **"Enable AI Trading"**.
+3.  **Approve**: The browser generates a secure local agent and the user signs **one** transaction to approve it.
+4.  **Trade**: The bot is now authorized to execute professional SMC trades 24/7.
 
-| Variable | Description | Source Link |
-| :--- | :--- | :--- |
-| `KIMI_API_KEY` | Your Moonshot/Kimi API key. | [Moonshot API Platform](https://platform.moonshot.cn/) |
-| `HL_PRIVATE_KEY` | Your Hyperliquid **Agent** Private Key. | [Hyperliquid API Docs](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/nonces-and-api-wallets#api-wallets) |
+---
+
+## 🤖 Environment Variables (Production)
+
+### 1. Convex Backend
+Set these in your [Convex Dashboard](https://dashboard.convex.dev):
+
+| Variable | Description |
+| :--- | :--- |
+| `KIMI_API_KEY` | Your Moonshot/Kimi API key. |
 
 ### 2. Frontend (Next.js)
-Set these in your **Vercel Dashboard** or `.env.local`:
+Set these in **Vercel** or `.env.local`:
 
-| Variable | Description | Source Link |
-| :--- | :--- | :--- |
-| `NEXT_PUBLIC_PRIVY_APP_ID` | Your unique Privy App ID. | [Privy Dashboard](https://dashboard.privy.io/) |
-| `NEXT_PUBLIC_CONVEX_URL` | Your Convex Deployment URL. | [Convex Dashboard](https://dashboard.convex.dev) |
-
-## 🚀 Deployment Steps
-
-1. **Deploy the Brain**:
-   ```bash
-   cd korban_bot
-   npx convex deploy
-   ```
-
-2. **Connect the Hub**:
-   - Push this code to your GitHub.
-   - Link the repository to [Vercel](https://vercel.com).
-   - Add the Frontend environment variables listed above.
-
-3. **Activate the Scanner**:
-   - Once deployed, the `convex/crons.ts` will start the 15-minute market heartbeat automatically.
+| Variable | Description |
+| :--- | :--- |
+| `NEXT_PUBLIC_PRIVY_APP_ID` | Your Privy App ID. |
+| `NEXT_PUBLIC_CONVEX_URL` | Your Convex Deployment URL. |
 
 ## 📈 Strategy
 - **L2 Liquidity Clusters**
