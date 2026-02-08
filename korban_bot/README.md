@@ -2,38 +2,45 @@
 
 Professional Smart Money Concepts (SMC) & ICT trading bot on Hyperliquid.
 
-## 🤖 Telegram Bot Integration
+## 🤖 Project Setup & Environment Variables
 
-To receive trade alerts and control the bot via Telegram:
+To get **Korban Bot** running in production (Convex + Vercel), you must configure the following environment variables.
 
-1. **Get your Bot Token**: Message [@BotFather](https://t.me/botfather) on Telegram to create a new bot and copy the API Token.
-2. **Get your Chat ID**: Message [@userinfobot](https://t.me/userinfobot) to get your unique numerical Chat ID.
-3. **Set Convex Environment Variables**:
-   - `TELEGRAM_BOT_TOKEN`: Your token from BotFather.
-   - `TELEGRAM_CHAT_ID`: Your ID from userinfobot.
+### 1. Convex Backend (Neural Engine)
+Set these in your [Convex Dashboard](https://dashboard.convex.dev) under **Settings > Environment Variables**:
 
-The bot will now automatically ping you whenever Kimi identifies a **High Confidence Setup**!
+| Variable | Description |
+| :--- | :--- |
+| `KIMI_API_KEY` | Your Moonshot/Kimi API key (`sk-...`). |
+| `HL_PRIVATE_KEY` | Your Hyperliquid Wallet Private Key (for signing trades). |
+| `TELEGRAM_BOT_TOKEN` | (Optional) Token from [@BotFather](https://t.me/botfather) for alerts. |
+| `TELEGRAM_CHAT_ID` | (Optional) Your Chat ID from [@userinfobot](https://t.me/userinfobot). |
 
-## 🚀 Quick Start (Deployment)
+### 2. Frontend (Next.js)
+Set these in your **Vercel Dashboard** or `.env.local`:
 
-### 1. Backend (Convex)
-```bash
-cd korban_bot
-npx convex deploy
-```
-*   Go to [Convex Dashboard](https://dashboard.convex.dev)
-*   Set Environment Variables:
-    *   `KIMI_API_KEY`: Your Moonshot/Kimi API key.
-    *   `HL_PRIVATE_KEY`: Your Hyperliquid signing key (for auto-trading).
+| Variable | Description |
+| :--- | :--- |
+| `NEXT_PUBLIC_PRIVY_APP_ID` | Your App ID from the [Privy Dashboard](https://dashboard.privy.io). |
+| `NEXT_PUBLIC_CONVEX_URL` | Your unique Convex Deployment URL (e.g., `https://...convex.cloud`). |
 
-### 2. Frontend (Vercel)
-*   Push this repo to GitHub.
-*   Import to [Vercel](https://vercel.com).
-*   Add Env Vars:
-    *   `NEXT_PUBLIC_PRIVY_APP_ID`: From your Privy dashboard.
-    *   `NEXT_PUBLIC_CONVEX_URL`: From your Convex dashboard.
+## 🚀 Deployment Steps
 
-## 🏛️ Architecture
+1. **Deploy the Brain**:
+   ```bash
+   cd korban_bot
+   npx convex deploy
+   ```
+
+2. **Connect the Hub**:
+   - Push this code to your GitHub.
+   - Link the repository to [Vercel](https://vercel.com).
+   - Add the Frontend environment variables listed above.
+
+3. **Activate the Scanner**:
+   - Once deployed, the `convex/crons.ts` will start the 15-minute market heartbeat automatically.
+
+## 🏗️ Architecture
 - **Next.js 15**: Premium UI with Framer Motion & Tailwind.
 - **Convex**: Real-time state management and AI orchestration.
 - **Kimi API**: Institutional market analysis (SMC/ICT).
