@@ -12,7 +12,6 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { ShieldCheck } from 'lucide-react';
 import { initializeAgent } from '@/lib/agent-setup';
-import { depositToHyperliquid } from '@/lib/bridge-utils';
 import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
@@ -171,40 +170,19 @@ export default function Dashboard() {
               <p className="text-[10px] text-zinc-400 leading-relaxed">Required for 24/7 autonomous trading. Limited permissions: Trading only.</p>
               
               {balanceDetails?.accountValue === 0 && (
-                <div className="bg-orange-500/5 border border-orange-500/20 p-4 rounded-2xl flex flex-col gap-4">
-                   <div>
-                     <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Direct Deposit (Arbitrum)</p>
-                     <p className="text-[8px] text-zinc-500 leading-tight">Send USDC directly from Arbitrum to your Hyperliquid L1 account.</p>
+                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex flex-col gap-3">
+                   <div className="flex items-center gap-2">
+                     <ShieldCheck className="text-red-500" size={16} />
+                     <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">Empty Wallet</p>
                    </div>
-                   
-                   <div className="flex gap-2">
-                     <input 
-                      type="number" 
-                      id="depositAmount"
-                      placeholder="Amount" 
-                      className="bg-black border border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono w-full focus:outline-none focus:border-orange-500 transition-colors"
-                     />
-                     <button 
-                      onClick={async () => {
-                        const amt = (document.getElementById('depositAmount') as HTMLInputElement).value;
-                        if(!amt) return;
-                        try {
-                          const wallet = wallets.find(w => w.address.toLowerCase() === user?.wallet?.address?.toLowerCase());
-                          if (!wallet) return;
-                          const provider = await wallet.getEthereumProvider();
-                          const ethersProvider = new ethers.BrowserProvider(provider);
-                          const signer = await ethersProvider.getSigner();
-                          await depositToHyperliquid(parseFloat(amt), signer);
-                          alert("Deposit transaction submitted! Your balance will update in ~2-5 minutes.");
-                        } catch (e) {
-                          alert("Deposit failed. Check console for details.");
-                        }
-                      }}
-                      className="px-4 py-2 bg-orange-500 text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-600 transition-all"
-                     >
-                       Deposit
-                     </button>
-                   </div>
+                   <p className="text-[9px] text-zinc-500 leading-tight">Your Hyperliquid L1 account has $0.00. Please deposit USDC using the official bridge.</p>
+                   <a 
+                    href="https://app.hyperliquid.xyz/trade" 
+                    target="_blank" 
+                    className="w-full py-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 text-[10px] font-black uppercase tracking-widest rounded-lg text-center transition-all"
+                   >
+                     Fund on Hyperliquid.xyz
+                   </a>
                 </div>
               )}
 
