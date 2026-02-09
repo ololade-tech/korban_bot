@@ -10,10 +10,9 @@ export const executeBrainTurn = action({
   handler: async (ctx, args): Promise<{ status: string; reason?: string; action?: string }> => {
     // 1. SAFETY: Check Balance & Settings
     const settings = await ctx.runQuery(api.trades.getSettings);
-    if (!settings?.isAutoTrading) return { status: "IDLE", reason: "Auto-trading is OFF" };
-
-    const symbol = args.symbol ?? settings.activeSymbol ?? "HYPE";
-    const userAddress = args.userAddress ?? settings.activeWallet;
+    
+    const symbol = args.symbol ?? settings?.activeSymbol ?? "HYPE";
+    const userAddress = args.userAddress ?? settings?.activeWallet;
 
     if (!userAddress) {
       return { status: "HALTED", reason: "No active wallet authorized." };
@@ -27,11 +26,8 @@ export const executeBrainTurn = action({
     const accountState = await resBalance.json();
     const balance = parseFloat(accountState.withdrawable || "0");
 
-    if (balance < (settings.minBalanceThreshold ?? 0.1)) {
-      return { status: "HALTED", reason: "Insufficient Balance" };
-    }
-
     // 2. DATA: Fetch Candle & L2 Data
+    console.log(`[ORCHESTRATOR] Fetching data for ${symbol}...`);
     const resCandles = await fetch("https://api.hyperliquid.xyz/info", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -70,9 +66,9 @@ export const executeBrainTurn = action({
       return { status: "MONITORING", reason: signal.reasoning };
     }
 
-    // 4. EXECUTION: If Confidence is high, place order & notify
-    if (signal.confidence > 0.85) {
-      console.log(`[ORCHESTRATOR] Triggering ${signal.action} for ${symbol}`);
+    // 4. EXECUTION: Only if Auto-Trading is ON and Balance is above threshold
+    if (settings?.isAutoTrading && balance >= (settings.minBalanceThreshold ?? 0.1) && signal.confidence > 0.85) {
+      console.log(`[ORCHESTRATOR] Triggering ${signal.action} execution for ${symbol}`);
       
       await ctx.runAction(api.notifications.sendAlert, {
         message: `🚀 *RELOGO ALERT: ${signal.action} ${symbol}*\n\n` +
@@ -83,6 +79,8 @@ export const executeBrainTurn = action({
       });
 
       // await ctx.runAction(api.executor.executeOrder, { ... });
+    } else if (signal.confidence > 0.85) {
+      console.log(`[ORCHESTRATOR] Signal generated but execution skipped (Auto-trading: ${settings?.isAutoTrading}, Balance: ${balance})`);
     }
 
     return { status: "SIGNAL_GENERATED", action: signal.action };
