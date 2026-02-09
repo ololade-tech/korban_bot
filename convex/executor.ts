@@ -15,7 +15,7 @@ export const executeOrder = action({
     size: v.number(),
     isMarket: v.boolean(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; response?: any; error?: any }> => {
     // 1. Fetch the Trading Agent's Private Key from Settings
     const settings = await ctx.runQuery(api.trades.getSettings);
     const privateKey = settings?.activePrivateKey;

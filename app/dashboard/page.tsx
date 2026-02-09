@@ -9,7 +9,11 @@ import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useAction } from "convex/react";
+<<<<<<< HEAD
 import { api } from "../../convex/_generated/api";
+=======
+import { api } from "@/convex/_generated/api";
+>>>>>>> 6cc846b (fix: resolve circular type inference in executor and unify path aliases for frontend imports)
 import { ShieldCheck } from 'lucide-react';
 import { initializeAgent } from '@/lib/agent-setup';
 import { useRouter } from 'next/navigation';
