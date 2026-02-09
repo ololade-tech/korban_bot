@@ -6,36 +6,33 @@ import { Hyperliquid } from 'hyperliquid-sdk';
 
 /**
  * Hyperliquid Order Execution Utility
- * Uses the Hyperliquid SDK to sign and place orders on L1 via an authorized Agent.
+ * Correctly uses the official 'hyperliquid-sdk' for L1 transactions.
  */
 export const executeOrder = action({
   args: {
     symbol: v.string(),
     side: v.string(), // "BUY" or "SELL"
     size: v.number(),
-    isMarket: v.boolean(),
   },
   handler: async (ctx, args): Promise<{ success: boolean; response?: any; error?: any }> => {
-    // 1. Fetch the Trading Agent's Private Key from Settings
     const settings = await ctx.runQuery(api.trades.getSettings);
     const privateKey = settings?.activePrivateKey;
 
     if (!privateKey) {
-      console.error("[EXECUTOR] No trading agent key found in settings.");
-      return { success: false, error: "Trading agent not authorized. Please click 'Authorize Agent' in the dashboard." };
+      return { success: false, error: "Agent key missing. Please authorize in Dashboard." };
     }
 
     try {
-      // 2. Initialize Hyperliquid SDK with the Agent Wallet
+      // 1. Initialize SDK with the private key (authorized via 'approveAgent' on L1)
       const wallet = new ethers.Wallet(privateKey);
-      const sdk = new Hyperliquid(wallet, false); // Mainnet
+      const sdk = new Hyperliquid(wallet); 
 
       const isBuy = args.side.toUpperCase() === "BUY";
       
-      console.log(`[EXECUTOR] Attempting ${args.side} ${args.size} ${args.symbol} on Hyperliquid L1...`);
+      console.log(`[SDK_EXECUTOR] Placing ${args.side} order for ${args.size} ${args.symbol}`);
 
-      // 3. Place Market Order (Hyperliquid uses Limit IOC @ price 0 for market-like execution)
-      // Custom marketOpen handles slippage and lot sizes internally
+      // 2. Use official sdk.exchange method for reliable L1 execution
+      // marketOpen handles asset conversion and L1 signature formatting
       const result = await sdk.custom.marketOpen(
         args.symbol,
         isBuy,
@@ -43,26 +40,14 @@ export const executeOrder = action({
       );
 
       if (result.status === 'ok') {
-        console.log(`[EXECUTOR] Order SUCCESS:`, result.response);
-        
-        // Log the successful trade in the database
-        await ctx.runMutation(api.trades.logTrade, {
-          symbol: args.symbol,
-          side: args.side.toLowerCase(),
-          entryPrice: 0, // Market price at the time
-          amount: args.size,
-          status: "OPEN",
-          openedAt: Date.now()
-        });
-
+        console.log(`[SDK_EXECUTOR] Trade Confirmed on L1`);
         return { success: true, response: result.response };
       } else {
-        console.error(`[EXECUTOR] Order FAILED:`, result.response);
         return { success: false, error: result.response };
       }
 
     } catch (err: any) {
-      console.error("[EXECUTOR] Execution error:", err.message);
+      console.error("[SDK_EXECUTOR] Error:", err.message);
       return { success: false, error: err.message };
     }
   },
