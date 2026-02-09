@@ -5,62 +5,29 @@ import StatsDashboard from '@/components/StatsDashboard';
 import { TradingChart } from '@/components/TradingChart';
 import ControlPanel from '@/components/ControlPanel';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePrivy, useWallets } from '@privy-io/react-auth';
-import { ethers } from 'ethers';
+import { usePrivy } from '@privy-io/react-auth';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { ShieldCheck, LogOut } from 'lucide-react';
+import { api } from "../convex/_generated/api";
+import { ShieldCheck } from 'lucide-react';
 import { initializeAgent } from '@/lib/agent-setup';
-import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
-  const { logout, user, authenticated, ready } = usePrivy();
-  const { wallets } = useWallets();
-  const router = useRouter();
+  const { logout, user } = usePrivy();
   const [activeSymbol] = useState('HYPE');
-  const [activeInterval, setActiveInterval] = useState('15m');
-  const [balanceDetails, setBalanceDetails] = useState<{ accountValue: number, withdrawable: number } | null>(null);
-
-  // Protection: Redirect if not authenticated
-  useEffect(() => {
-    if (ready && !authenticated) {
-      router.push('/');
-    }
-  }, [ready, authenticated, router]);
-
   const price = useHyperliquidPrice(activeSymbol);
   
   const latestSignal = useQuery(api.trades.getLatestSignal, { symbol: activeSymbol });
   const saveAgentKey = useMutation(api.trades.saveAgentKey);
-  const ensureSettings = useMutation(api.trades.ensureSettings);
-  const resetSettings = useMutation(api.trades.resetSettings);
   const [chartData, setChartData] = useState<any[]>([]);
-
-  // Initialize settings if they don't exist
-  useEffect(() => {
-    ensureSettings();
-  }, [ensureSettings]);
 
   // One-Click Authorization Flow
   const setupAgent = async () => {
     if (!user?.wallet?.address) return;
     
     try {
-      // 1. Find the specific wallet matching the current Privy user address
-      const wallet = wallets.find(w => w.address.toLowerCase() === user.wallet?.address?.toLowerCase());
-      
-      if (!wallet) {
-        alert("Active wallet not found. Please ensure your wallet is connected.");
-        return;
-      }
-
-      // Get the provider from Privy and wrap it in ethers
-      const provider = await wallet.getEthereumProvider();
-      const ethersProvider = new ethers.BrowserProvider(provider);
-      const signer = await ethersProvider.getSigner();
-      
-      const agentData = await initializeAgent(user.wallet.address, signer);
+      // 1. Generate Agent & Request Signature from the connected wallet
+      const agentData = await initializeAgent(user.wallet.address, (window as any).ethereum);
       
       // 2. Push the Agent's trading key to the bot backend
       await saveAgentKey({
@@ -84,7 +51,7 @@ export default function Dashboard() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             type: "candleSnapshot",
-            req: { coin: activeSymbol, interval: activeInterval, startTime: Date.now() - 48 * 60 * 60 * 1000 }
+            req: { coin: activeSymbol, interval: "15m", startTime: Date.now() - 24 * 60 * 60 * 1000 }
           })
         });
         const data = await res.json();
@@ -102,34 +69,10 @@ export default function Dashboard() {
         console.error("Candle fetch failed", e);
       }
     }
-
-    async function fetchBalance() {
-      if (!user?.wallet?.address) return;
-      try {
-        const res = await fetch("https://api.hyperliquid.xyz/info", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type: "clearinghouseState", user: user.wallet.address })
-        });
-        const data = await res.json();
-        const accountValue = parseFloat(data.marginSummary?.accountValue || "0");
-        const withdrawable = parseFloat(data.withdrawable || "0");
-        setBalanceDetails({ accountValue, withdrawable });
-      } catch (e) {
-        console.error("Balance fetch failed", e);
-      }
-    }
-
     fetchCandles();
-    fetchBalance();
-    const interval = setInterval(() => {
-      fetchCandles();
-      fetchBalance();
-    }, 10000); // Poll every 10s for real-time feel
+    const interval = setInterval(fetchCandles, 60000);
     return () => clearInterval(interval);
-  }, [activeSymbol, activeInterval, user?.wallet?.address]);
-
-  if (!ready || !authenticated) return null;
+  }, [activeSymbol]);
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -140,29 +83,24 @@ export default function Dashboard() {
         </div>
         
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-6 pr-6 border-r border-zinc-900">
-             <div className="flex flex-col items-end">
-               <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-orange-500">System Live</span>
-               <span className="text-sm font-mono font-bold text-white">
-                 {balanceDetails ? `$${balanceDetails.accountValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '$0.00'}
-               </span>
-             </div>
-             <div className="flex flex-col items-end">
-               <span className="text-[8px] text-zinc-600 uppercase font-black">Withdrawable</span>
-               <span className="text-xs font-mono font-bold text-zinc-400">
-                 {balanceDetails ? `$${balanceDetails.withdrawable.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '$0.00'}
-               </span>
-             </div>
-             <div className="flex flex-col items-end">
-               <span className="text-[8px] text-zinc-600 uppercase font-black">Market</span>
-               <span className="text-sm font-mono font-bold text-orange-500">{activeSymbol}</span>
+          <div className="flex flex-col items-end">
+             <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-orange-500">Neural Scanner Active</span>
+             <div className="flex gap-4 items-center">
+                <div className="flex flex-col items-end">
+                  <span className="text-[8px] text-zinc-600 uppercase font-black">Account Value</span>
+                  <span className="text-sm font-mono font-bold text-white">$1,240.50</span>
+                </div>
+                <div className="flex flex-col items-end">
+                  <span className="text-[8px] text-zinc-600 uppercase font-black">Active Market</span>
+                  <span className="text-sm font-mono font-bold text-orange-500">{activeSymbol}</span>
+                </div>
              </div>
           </div>
           <button 
             onClick={() => logout()}
             className="px-4 py-2 border border-zinc-800 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-zinc-900 transition-colors"
           >
-            Disconnect
+            Exit
           </button>
         </div>
       </nav>
@@ -180,12 +118,8 @@ export default function Dashboard() {
             <div className="flex justify-between items-end">
               <h2 className="text-sm font-black uppercase tracking-widest text-zinc-500">Live Market</h2>
               <div className="flex gap-2">
-                {['1m', '5m', '15m', '1h', '4h', '1d'].map((tf) => (
-                  <button 
-                    key={tf} 
-                    onClick={() => setActiveInterval(tf)}
-                    className={`px-2 py-1 text-[10px] font-bold rounded uppercase transition-all ${activeInterval === tf ? 'bg-orange-500 text-black' : 'text-zinc-500 hover:text-white hover:bg-zinc-800'}`}
-                  >
+                {['1M', '5M', '15M', '1H', '4H', '1D'].map((tf) => (
+                  <button key={tf} className={`px-2 py-1 text-[10px] font-bold rounded ${tf === '15M' ? 'bg-orange-500 text-black' : 'text-zinc-500 hover:text-white'}`}>
                     {tf}
                   </button>
                 ))}
@@ -215,21 +149,13 @@ export default function Dashboard() {
               >
                 Authorize Agent
               </button>
-              <button 
-                onClick={() => {
-                  if(confirm("Are you sure you want to reset all bot settings?")) resetSettings();
-                }}
-                className="w-full py-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hover:text-white transition-colors"
-              >
-                Reset System Settings
-              </button>
             </div>
 
             <h2 className="text-sm font-black uppercase tracking-widest text-zinc-500 mt-4">AI Intelligence</h2>
             <div className="bg-zinc-900/30 border border-zinc-800 rounded-3xl p-6 flex-1 min-h-[300px] overflow-y-auto">
                <div className="flex items-center gap-2 mb-6">
                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                 <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Relogo Neural Engine Active</span>
+                 <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Neural Engine Active</span>
                </div>
                
                <AnimatePresence mode="wait">
