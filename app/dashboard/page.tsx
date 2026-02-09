@@ -8,8 +8,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePrivy } from '@privy-io/react-auth';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from "convex/react";
+<<<<<<< HEAD
 import { api } from "../convex/_generated/api";
 import { ShieldCheck } from 'lucide-react';
+=======
+import { api } from "../../convex/_generated/api";
+import { ShieldCheck, LogOut } from 'lucide-react';
+>>>>>>> 0bd7b04 (fix: resolve module not found by using relative paths for convex and finalize build)
 import { initializeAgent } from '@/lib/agent-setup';
 
 export default function Dashboard() {
