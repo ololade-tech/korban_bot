@@ -14,17 +14,16 @@ export const executeBrainTurn = action({
     const symbol = args.symbol ?? settings?.activeSymbol ?? "HYPE";
     const userAddress = args.userAddress ?? settings?.activeWallet;
 
-    if (!userAddress) {
-      return { status: "HALTED", reason: "No active wallet authorized." };
+    let balance = 0;
+    if (userAddress) {
+      const resBalance = await fetch("https://api.hyperliquid.xyz/info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "clearinghouseState", user: userAddress }),
+      });
+      const accountState = await resBalance.json();
+      balance = parseFloat(accountState.withdrawable || "0");
     }
-
-    const resBalance = await fetch("https://api.hyperliquid.xyz/info", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "clearinghouseState", user: userAddress }),
-    });
-    const accountState = await resBalance.json();
-    const balance = parseFloat(accountState.withdrawable || "0");
 
     // 2. DATA: Fetch Candle & L2 Data
     console.log(`[ORCHESTRATOR] Fetching data for ${symbol}...`);

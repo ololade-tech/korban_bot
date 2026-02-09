@@ -165,7 +165,18 @@ export default function Dashboard() {
             </div>
             <h2 className="text-sm font-black uppercase tracking-widest text-zinc-500 mt-4">AI Intelligence</h2>
             <div className="bg-zinc-900/30 border border-zinc-800 rounded-3xl p-6 flex-1 min-h-[300px] overflow-y-auto">
-               <div className="flex items-center gap-2 mb-6"><div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" /><span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Neural Engine Active</span></div>
+               <div className="flex items-center justify-between mb-6">
+                 <div className="flex items-center gap-2">
+                   <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                   <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Neural Engine Active</span>
+                 </div>
+                 <button 
+                  onClick={() => triggerBrainTurn({ symbol: activeSymbol })}
+                  className="px-2 py-1 bg-orange-500/10 border border-orange-500/20 rounded text-[8px] font-black text-orange-500 uppercase hover:bg-orange-500 hover:text-black transition-all"
+                 >
+                   Refresh Analysis
+                 </button>
+               </div>
                <AnimatePresence mode="wait">
                  {latestSignal ? (
                    <motion.div key={latestSignal._id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
