@@ -29,7 +29,7 @@ export const runProfessionalStrategy = action({
     const apiKey = process.env.MISTRAL_API_KEY;
     const apiUrl = "https://api.mistral.ai/v1/chat/completions";
 
-    if (!apiKey) return { action: "WAIT", reasoning: "System not ready: Mistral key missing." };
+    if (!apiKey) return { action: "WAIT", confidence: 0, reasoning: "System not ready: Mistral key missing." };
 
     // PRO-LEVEL PROMPT: Smart Money Concepts (SMC) & ICT Focus
     const prompt = `
@@ -77,7 +77,7 @@ export const runProfessionalStrategy = action({
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`[STRATEGY] Mistral API Error: ${response.status} - ${errorText}`);
-      return { action: "WAIT", reasoning: "Neural Engine temporarily unavailable." };
+      return { action: "WAIT", confidence: 0, reasoning: "Neural Engine temporarily unavailable." };
     }
 
     const data = await response.json();
