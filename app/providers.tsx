@@ -1,6 +1,9 @@
 'use client';
 
 import { PrivyProvider } from '@privy-io/react-auth';
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +22,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         },
       }}
     >
-      {children}
+      <ConvexProvider client={convex}>
+        {children}
+      </ConvexProvider>
     </PrivyProvider>
   );
 }

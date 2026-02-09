@@ -39,7 +39,7 @@ export const marketScanner = action({
     
     // 3. Ask Kimi to pick the best market based on volatility and structure
     const scannerPrompt = `
-      As Korban Scanner, analyze these markets: ${JSON.stringify(contexts.slice(0, 10))}
+      As Relogo Scanner, analyze these markets: ${JSON.stringify(contexts.slice(0, 10))}
       Current Balance: $${withrawalable}
       
       Identify which asset has the cleanest Institutional Order Block or Liquidity Sweep setup.

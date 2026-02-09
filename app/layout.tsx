@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Korban Bot | AI Trading Hub",
+  title: "Relogo Bot | AI Trading Hub",
   description: "High-performance AI trading on Hyperliquid",
 };
 

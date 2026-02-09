@@ -1,12 +1,12 @@
 const { ethers } = require('ethers');
 
 /**
- * KORBAN BOT: Agent Generator
+ * RELOGO BOT: Agent Generator
  * This script creates a new, secure trading key for your bot.
  */
 
 async function generate() {
-    console.log("🟠 GENERATING KORBAN TRADING AGENT...");
+    console.log("🟠 GENERATING RELOGO TRADING AGENT...");
     const wallet = ethers.Wallet.createRandom();
     
     console.log("\n--------------------------------------------------");

@@ -17,10 +17,10 @@ export default function Home() {
           className="flex flex-col items-center gap-4"
         >
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-700 flex items-center justify-center shadow-2xl shadow-orange-500/20 mb-4">
-             <span className="text-4xl font-black text-black">K</span>
+             <span className="text-4xl font-black text-black">R</span>
           </div>
           <h1 className="text-6xl font-black tracking-tighter bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">
-            KORBAN<span className="text-orange-500">BOT</span>
+            RELOGO<span className="text-orange-500">BOT</span>
           </h1>
           <div className="h-1 w-12 bg-orange-500 rounded-full" />
         </motion.div>
@@ -33,10 +33,10 @@ export default function Home() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={login}
+            onClick={() => login()}
             className="px-12 py-4 bg-orange-500 hover:bg-orange-600 text-black rounded-xl font-black transition-all shadow-[0_0_40px_rgba(249,115,22,0.2)]"
           >
-            ENTER THE HUB
+            CONNECT WALLET
           </motion.button>
         ) : (
           <motion.div 
@@ -56,10 +56,10 @@ export default function Home() {
                  Open Dashboard
                </Link>
                <button
-                onClick={logout}
+                onClick={() => logout()}
                 className="text-gray-600 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
               >
-                Terminate Session
+                Disconnect Wallet
               </button>
             </div>
           </motion.div>

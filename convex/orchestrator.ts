@@ -20,7 +20,7 @@ export const executeBrainTurn = action({
     const accountState = await resBalance.json();
     const balance = parseFloat(accountState.withdrawable || "0");
 
-    if (balance < (settings.minBalanceThreshold ?? 100)) {
+    if (balance < (settings.minBalanceThreshold ?? 0.1)) {
       return { status: "HALTED", reason: "Insufficient Balance" };
     }
 
@@ -30,7 +30,7 @@ export const executeBrainTurn = action({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         type: "candleSnapshot",
-        req: { coin: args.symbol, interval: "15m", startTime: Date.now() - 2 * 3600 * 000 }
+        req: { coin: args.symbol, interval: "15m", startTime: Date.now() - 2 * 3600 * 1000 }
       })
     });
     const candles = await resCandles.json();
@@ -43,11 +43,18 @@ export const executeBrainTurn = action({
     const l2 = await resL2.json();
 
     // 3. BRAIN: Run Strategy Action
-    const signal = await ctx.runAction(api.strategy.runProfessionalStrategy, {
+    const signal = (await ctx.runAction(api.strategy.runProfessionalStrategy, {
       symbol: args.symbol,
       l2Data: l2,
       candleData: candles,
-    });
+    })) as {
+      action: "BUY" | "SELL" | "WAIT";
+      confidence: number;
+      setup_type?: string;
+      reasoning: string;
+      take_profit?: string;
+      stop_loss?: string;
+    };
 
     if (signal.action === "WAIT") {
       return { status: "MONITORING", reason: signal.reasoning };
@@ -58,7 +65,7 @@ export const executeBrainTurn = action({
       console.log(`[ORCHESTRATOR] Triggering ${signal.action} for ${args.symbol}`);
       
       await ctx.runAction(api.notifications.sendAlert, {
-        message: `🚀 *KORBAN ALERT: ${signal.action} ${args.symbol}*\n\n` +
+        message: `🚀 *RELOGO ALERT: ${signal.action} ${args.symbol}*\n\n` +
                  `🎯 *Setup*: ${signal.setup_type || 'Professional Logic'}\n` +
                  `🧠 *Reasoning*: ${signal.reasoning}\n` +
                  `💰 *TP*: ${signal.take_profit} | *SL*: ${signal.stop_loss}\n\n` +

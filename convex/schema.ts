@@ -23,6 +23,9 @@ export default defineSchema({
     confidence: v.number(),
     processed: v.boolean(),
     timestamp: v.number(),
+    setup_type: v.optional(v.string()),
+    stop_loss: v.optional(v.string()),
+    take_profit: v.optional(v.string()),
   }).index("by_symbol", ["symbol"]),
 
   // User/Bot configurations

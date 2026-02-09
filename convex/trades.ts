@@ -37,6 +37,9 @@ export const recordSignal = mutation({
     action: v.string(),
     reasoning: v.string(),
     confidence: v.number(),
+    setup_type: v.optional(v.string()),
+    stop_loss: v.optional(v.string()),
+    take_profit: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("signals", {
@@ -110,6 +113,57 @@ export const saveAgentKey = mutation({
         activeWallet: args.address,
         // In a real prod environment, we would encrypt this or use an HSM
         // For the hackathon, we store it to enable the 24/7 orchestrator
+      });
+    }
+  },
+});
+
+/**
+ * Update general bot settings
+ */
+export const updateSettings = mutation({
+  args: { minBalanceThreshold: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const settings = await ctx.db.query("settings").first();
+    if (settings) {
+      await ctx.db.patch(settings._id, { ...args });
+    }
+  },
+});
+
+/**
+ * Reset settings to default
+ */
+export const resetSettings = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const settings = await ctx.db.query("settings").first();
+    if (settings) {
+      await ctx.db.patch(settings._id, {
+        isAutoTrading: false,
+        maxLeverage: 10,
+        stopLossPercent: 2,
+        takeProfitPercent: 5,
+        minBalanceThreshold: 0.1,
+        activeSymbol: "HYPE",
+      });
+    }
+  },
+});
+
+export const ensureSettings = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const settings = await ctx.db.query("settings").first();
+    if (!settings) {
+      await ctx.db.insert("settings", {
+        isAutoTrading: false,
+        maxLeverage: 10,
+        stopLossPercent: 2,
+        takeProfitPercent: 5,
+        minBalanceThreshold: 0.1,
+        allowedSymbols: ["HYPE", "BTC", "ETH", "SOL"],
+        activeSymbol: "HYPE",
       });
     }
   },

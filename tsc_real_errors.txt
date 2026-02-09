@@ -1,0 +1,6 @@
+app/dashboard/page.tsx(187,47): error TS2339: Property 'setup_type' does not exist on type '{ _id: Id<"signals">; _creationTime: number; symbol: string; action: string; reasoning: string; confidence: number; processed: boolean; timestamp: number; }'.
+app/dashboard/page.tsx(199,103): error TS2339: Property 'stop_loss' does not exist on type '{ _id: Id<"signals">; _creationTime: number; symbol: string; action: string; reasoning: string; confidence: number; processed: boolean; timestamp: number; }'.
+app/dashboard/page.tsx(203,105): error TS2339: Property 'take_profit' does not exist on type '{ _id: Id<"signals">; _creationTime: number; symbol: string; action: string; reasoning: string; confidence: number; processed: boolean; timestamp: number; }'.
+convex/orchestrator.ts(5,14): error TS7022: 'executeBrainTurn' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+convex/orchestrator.ts(10,3): error TS7023: 'handler' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+convex/orchestrator.ts(46,11): error TS7022: 'signal' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.

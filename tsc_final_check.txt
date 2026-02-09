@@ -1,0 +1,4 @@
+components/ControlPanel.tsx(27,11): error TS2322: Type 'ReactMutation<FunctionReference<"mutation", "public", {}, null, string | undefined>>' is not assignable to type 'MouseEventHandler<HTMLButtonElement>'.
+  Types of parameters 'args' and 'event' are incompatible.
+    Type 'MouseEvent<HTMLButtonElement, MouseEvent>' is not assignable to type 'EmptyObject'.
+      Index signature for type 'string' is missing in type 'MouseEvent<HTMLButtonElement, MouseEvent>'.

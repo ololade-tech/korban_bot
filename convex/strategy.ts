@@ -1,5 +1,5 @@
 /**
- * KORBAN STRATEGY ENGINE: Liquidity & Market Structure (LMS)
+ * RELOGO STRATEGY ENGINE: Liquidity & Market Structure (LMS)
  * 
  * This strategy focuses on:
  * 1. Market Structure Breaks (MSB)
@@ -18,14 +18,14 @@ export const runProfessionalStrategy = action({
     candleData: v.any(), // Recent OHLCV
   },
   handler: async (ctx, args) => {
-    const apiKey = process.env.KIMI_API_KEY;
-    const apiUrl = "https://api.moonshot.cn/v1/chat/completions";
+    const apiKey = process.env.MISTRAL_API_KEY;
+    const apiUrl = "https://api.mistral.ai/v1/chat/completions";
 
-    if (!apiKey) return { action: "WAIT", reasoning: "System not ready: Neural key missing." };
+    if (!apiKey) return { action: "WAIT", reasoning: "System not ready: Mistral key missing." };
 
     // PRO-LEVEL PROMPT: Smart Money Concepts (SMC) & ICT Focus
     const prompt = `
-      You are an institutional-grade quant trader for Korban Bot, specializing in Smart Money Concepts (SMC) and ICT methodology. 
+      You are an institutional-grade quant trader for Relogo Bot, specializing in Smart Money Concepts (SMC) and ICT methodology. 
       Analyze the following data for ${args.symbol} with extreme precision.
       
       MARKET DATA:
@@ -38,16 +38,17 @@ export const runProfessionalStrategy = action({
       3. MARKET STRUCTURE SHIFT (MSS): Look for the displacement that breaks the previous swing high/low.
       4. TREND LINES & LIQUIDITY SWEEPS: Spot where retail trend lines are being "swept" to fuel the next big move.
       5. PREMIUM vs DISCOUNT: Are we in a high-probability zone (e.g., below 50% retracement for a long)?
+      6. RESPONSE: Return ONLY a valid JSON object. No Markdown. No commentary.
 
-      RESPONSE FORMAT (Strict JSON):
+      RESPONSE FORMAT:
       {
         "action": "BUY" | "SELL" | "WAIT",
         "confidence": 0.0 to 1.0,
-        "setup_type": "Order Block Rejection" | "FVG Fill" | "Liquidity Sweep" | "MSS Confirmation",
-        "entry_zone": "price",
-        "stop_loss": "price",
-        "take_profit": "price",
-        "reasoning": "SMC-focused institutional analysis"
+        "setup_type": "string",
+        "entry_zone": "string",
+        "stop_loss": "string",
+        "take_profit": "string",
+        "reasoning": "string"
       }
     `;
 
@@ -58,8 +59,8 @@ export const runProfessionalStrategy = action({
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "moonshot-v1-8k",
-        messages: [{ role: "system", content: prompt }],
+        model: "mistral-large-latest",
+        messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
       }),
     });
@@ -71,8 +72,11 @@ export const runProfessionalStrategy = action({
     await ctx.runMutation(api.trades.recordSignal, {
       symbol: args.symbol,
       action: strategyResult.action,
-      reasoning: `${strategyResult.reasoning} | SL: ${strategyResult.stop_loss} | TP: ${strategyResult.take_profit}`,
+      reasoning: strategyResult.reasoning,
       confidence: strategyResult.confidence,
+      setup_type: strategyResult.setup_type,
+      stop_loss: strategyResult.stop_loss,
+      take_profit: strategyResult.take_profit,
     });
 
     return strategyResult;

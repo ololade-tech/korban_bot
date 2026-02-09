@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
+import { api } from "@/convex/_generated/api";
 import { motion } from 'framer-motion';
 import { ShieldAlert, Power, Wallet, Crosshair } from 'lucide-react';
 
@@ -9,6 +9,7 @@ export default function ControlPanel() {
   const settings = useQuery(api.trades.getSettings);
   const updateActiveMarket = useMutation(api.trades.updateActiveMarket);
   const toggleAutoTrade = useMutation(api.trades.toggleAutoTrading);
+  const updateSettings = useMutation(api.trades.updateSettings);
 
   if (!settings) return null;
 
@@ -24,7 +25,7 @@ export default function ControlPanel() {
       <div className="grid grid-cols-1 gap-3">
         {/* Auto-Trade Toggle */}
         <button 
-          onClick={toggleAutoTrade}
+          onClick={() => toggleAutoTrade()}
           className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${settings.isAutoTrading ? 'bg-orange-500 border-orange-400 text-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-orange-500/50'}`}
         >
           <div className="flex items-center gap-3">
@@ -36,17 +37,27 @@ export default function ControlPanel() {
           </div>
         </button>
 
-        {/* Safety Threshold */}
+        {/* Safety Threshold Slider */}
         <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col gap-3">
           <div className="flex items-center justify-between text-zinc-500">
             <div className="flex items-center gap-2">
               <ShieldAlert size={14} />
               <span className="text-[10px] font-black uppercase tracking-widest">Min. Balance Shield</span>
             </div>
-            <span className="text-xs font-mono font-bold text-white">${settings.minBalanceThreshold}</span>
+            <span className="text-xs font-mono font-bold text-white">${settings.minBalanceThreshold.toFixed(2)}</span>
           </div>
-          <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-            <div className="h-full bg-orange-500 w-[40%]" />
+          <input 
+            type="range"
+            min="0"
+            max="1000"
+            step="0.1"
+            value={settings.minBalanceThreshold}
+            onChange={(e) => updateSettings({ minBalanceThreshold: parseFloat(e.target.value) })}
+            className="w-full h-1.5 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-orange-500"
+          />
+          <div className="flex justify-between text-[8px] text-zinc-600 font-bold uppercase">
+            <span>Aggressive ($0)</span>
+            <span>Conservative ($1k)</span>
           </div>
         </div>
 

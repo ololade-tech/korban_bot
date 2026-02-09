@@ -1,0 +1,7 @@
+components/TradingChart.tsx(27,39): error TS2344: Type 'SeriesDefinition<"Candlestick">' does not satisfy the constraint 'keyof SeriesOptionsMap'.
+components/TradingChart.tsx(64,5): error TS2322: Type 'ISeriesApi<"Candlestick", Time, CandlestickData<Time> | WhitespaceData<Time>, CandlestickSeriesOptions, DeepPartial<...>>' is not assignable to type 'ISeriesApi<SeriesDefinition<"Candlestick">, Time, unknown, unknown, unknown>'.
+  The types returned by 'seriesType()' are incompatible between these types.
+    Type 'string' is not assignable to type 'SeriesDefinition<"Candlestick">'.
+convex/orchestrator.ts(5,14): error TS7022: 'executeBrainTurn' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+convex/orchestrator.ts(10,3): error TS7023: 'handler' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+convex/orchestrator.ts(46,11): error TS7022: 'signal' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
