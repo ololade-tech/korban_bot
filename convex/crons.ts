@@ -8,11 +8,7 @@ const crons = cronJobs();
 crons.interval(
   "neural-trading-heartbeat",
   { minutes: 15 },
-  api.orchestrator.executeBrainTurn,
-  { 
-    symbol: "HYPE",
-    userAddress: "0x0000000000000000000000000000000000000000" // Placeholder
-  }
+  api.orchestrator.executeBrainTurn
 );
 
 export default crons;
