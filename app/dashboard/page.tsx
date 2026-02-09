@@ -8,9 +8,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { ShieldCheck, LogOut } from 'lucide-react';
+import { useQuery, useMutation, useAction } from "convex/react";
+import { api } from "../convex/_generated/api";
+import { ShieldCheck } from 'lucide-react';
 import { initializeAgent } from '@/lib/agent-setup';
 import { useRouter } from 'next/navigation';
 
@@ -35,6 +35,7 @@ export default function Dashboard() {
   const saveAgentKey = useMutation(api.trades.saveAgentKey);
   const ensureSettings = useMutation(api.trades.ensureSettings);
   const resetSettings = useMutation(api.trades.resetSettings);
+  const triggerBrainTurn = useAction(api.orchestrator.executeBrainTurn);
   const [chartData, setChartData] = useState<any[]>([]);
 
   // Initialize settings if they don't exist
@@ -68,7 +69,10 @@ export default function Dashboard() {
         privateKey: agentData.agentPrivateKey
       });
 
-      alert("SYSTEM INITIALIZED: Relogo AI is now authorized to trade on your behalf.");
+      // 3. Trigger immediate analysis so the user doesn't wait
+      await triggerBrainTurn({ symbol: activeSymbol, userAddress: user.wallet.address });
+
+      alert("SYSTEM INITIALIZED: Relogo AI is now authorized and has started market analysis.");
     } catch (err) {
       console.error("Setup failed", err);
       alert("Authorization failed. Please ensure your wallet is connected.");
