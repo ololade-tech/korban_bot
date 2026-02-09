@@ -8,7 +8,8 @@ const crons = cronJobs();
 crons.interval(
   "neural-trading-heartbeat",
   { minutes: 15 },
-  api.orchestrator.executeBrainTurn
+  api.orchestrator.executeBrainTurn,
+  {}
 );
 
 export default crons;
