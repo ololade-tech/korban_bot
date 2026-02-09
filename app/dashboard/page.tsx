@@ -128,9 +128,17 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-6 pr-6 border-r border-zinc-900 text-right">
+             <div className="flex flex-col items-end">
+               <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-orange-500 text-[8px]">Connected Wallet</span>
+               <span className="text-xs font-mono font-bold text-white bg-zinc-900 px-2 py-1 rounded">
+                 {user?.wallet?.address?.slice(0, 6)}...{user?.wallet?.address?.slice(-4)}
+               </span>
+             </div>
              <div>
                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-orange-500 text-[8px]">Account Value</p>
-               <p className="text-sm font-mono font-bold text-white">${balanceDetails?.accountValue.toFixed(2) ?? '0.00'}</p>
+               <p className={`text-sm font-mono font-bold ${balanceDetails?.accountValue === 0 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
+                 ${balanceDetails?.accountValue.toFixed(2) ?? '0.00'}
+               </p>
              </div>
              <div>
                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-[8px]">Active Market</p>
@@ -160,6 +168,21 @@ export default function Dashboard() {
             <div className="bg-orange-500/10 border border-orange-500/30 p-6 rounded-3xl flex flex-col gap-4">
               <div className="flex items-center gap-2"><ShieldCheck className="text-orange-500" size={20} /><h3 className="font-black uppercase tracking-widest text-sm text-white">Authorize Agent</h3></div>
               <p className="text-[10px] text-zinc-400 leading-relaxed">Required for 24/7 autonomous trading. Limited permissions: Trading only.</p>
+              
+              {balanceDetails?.accountValue === 0 && (
+                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex flex-col gap-2">
+                   <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">⚠️ Empty Wallet</p>
+                   <p className="text-[9px] text-zinc-500 leading-tight">Your Hyperliquid account has $0.00. You must deposit USDC to start trading.</p>
+                   <a 
+                    href="https://app.hyperliquid.xyz/trade" 
+                    target="_blank" 
+                    className="w-full py-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 text-[10px] font-black uppercase tracking-widest rounded-lg text-center transition-all"
+                   >
+                     Fund Hyperliquid Wallet
+                   </a>
+                </div>
+              )}
+
               <button onClick={() => setupAgent()} className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-black font-black uppercase tracking-widest text-xs rounded-xl transition-all shadow-lg shadow-orange-500/20">Authorize System</button>
               <button onClick={() => resetSettings()} className="w-full py-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hover:text-white transition-colors text-center">Reset Bot Settings</button>
             </div>
