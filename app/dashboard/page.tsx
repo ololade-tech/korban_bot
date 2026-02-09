@@ -19,7 +19,13 @@ export default function Dashboard() {
   
   const latestSignal = useQuery(api.trades.getLatestSignal, { symbol: activeSymbol });
   const saveAgentKey = useMutation(api.trades.saveAgentKey);
+  const ensureSettings = useMutation(api.trades.ensureSettings);
   const [chartData, setChartData] = useState<any[]>([]);
+
+  // Initialize Settings
+  useEffect(() => {
+    ensureSettings();
+  }, [ensureSettings]);
 
   // One-Click Authorization Flow
   const setupAgent = async () => {
