@@ -1,0 +1,26 @@
+
+> relogo@0.1.0 build C:\Users\olola\Documents\workspace\korban_bot
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 15.9s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/5) ...
+  Generating static pages using 11 workers (1/5) 
+  Generating static pages using 11 workers (2/5) 
+  Generating static pages using 11 workers (3/5) 
+✓ Generating static pages using 11 workers (5/5) in 4.5s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+└ ○ /dashboard
+
+
+○  (Static)  prerendered as static content
+

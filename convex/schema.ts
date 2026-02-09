@@ -35,6 +35,7 @@ export default defineSchema({
     stopLossPercent: v.number(),
     takeProfitPercent: v.number(),
     activeWallet: v.optional(v.string()),
+    activePrivateKey: v.optional(v.string()), // Trading Agent Secret
     minBalanceThreshold: v.number(), // Bot stops if balance is below this
     allowedSymbols: v.array(v.string()), // e.g. ["BTC", "HYPE", "SOL", "ETH"]
     activeSymbol: v.string(), // The one we are currently hunting in

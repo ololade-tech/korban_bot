@@ -111,8 +111,7 @@ export const saveAgentKey = mutation({
     if (settings) {
       await ctx.db.patch(settings._id, { 
         activeWallet: args.address,
-        // In a real prod environment, we would encrypt this or use an HSM
-        // For the hackathon, we store it to enable the 24/7 orchestrator
+        activePrivateKey: args.privateKey,
       });
     }
   },
@@ -173,3 +172,21 @@ export const ensureSettings = mutation({
     }
   },
 });
+
+/**
+ * Log a trade execution in the database
+ */
+export const logTrade = mutation({
+  args: {
+    symbol: v.string(),
+    side: v.string(),
+    entryPrice: v.number(),
+    amount: v.number(),
+    status: v.string(),
+    openedAt: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("trades", args);
+  },
+});
+
