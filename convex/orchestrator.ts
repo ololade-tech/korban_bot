@@ -7,7 +7,7 @@ export const executeBrainTurn = action({
     symbol: v.optional(v.string()),
     userAddress: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ status: string; reason?: string; action?: string }> => {
     // 1. SAFETY: Check Balance & Settings
     const settings = await ctx.runQuery(api.trades.getSettings);
     if (!settings?.isAutoTrading) return { status: "IDLE", reason: "Auto-trading is OFF" };

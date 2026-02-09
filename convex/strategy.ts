@@ -17,7 +17,15 @@ export const runProfessionalStrategy = action({
     l2Data: v.any(), // Orderbook data
     candleData: v.any(), // Recent OHLCV
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    action: "BUY" | "SELL" | "WAIT";
+    confidence: number;
+    setup_type?: string;
+    entry_zone?: string;
+    stop_loss?: string;
+    take_profit?: string;
+    reasoning: string;
+  }> => {
     const apiKey = process.env.MISTRAL_API_KEY;
     const apiUrl = "https://api.mistral.ai/v1/chat/completions";
 

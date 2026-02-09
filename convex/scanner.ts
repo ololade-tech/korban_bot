@@ -6,7 +6,7 @@ export const marketScanner = action({
   args: {
     userAddress: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ status: string; balance?: number; best_pair?: string; reason?: string }> => {
     // 1. Check Balance First (Safety Logic)
     const resBalance = await fetch("https://api.hyperliquid.xyz/info", {
       method: "POST",
