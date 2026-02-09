@@ -165,6 +165,11 @@ export const ensureSettings = mutation({
         allowedSymbols: ["HYPE", "BTC", "ETH", "SOL"],
         activeSymbol: "HYPE",
       });
+    } else {
+      // Ensure HYPE is the default if not set
+      if (!settings.activeSymbol) {
+        await ctx.db.patch(settings._id, { activeSymbol: "HYPE" });
+      }
     }
   },
 });

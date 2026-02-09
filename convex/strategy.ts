@@ -52,6 +52,7 @@ export const runProfessionalStrategy = action({
       }
     `;
 
+    console.log(`[STRATEGY] Requesting Mistral analysis for ${args.symbol}...`);
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -65,7 +66,14 @@ export const runProfessionalStrategy = action({
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[STRATEGY] Mistral API Error: ${response.status} - ${errorText}`);
+      return { action: "WAIT", reasoning: "Neural Engine temporarily unavailable." };
+    }
+
     const data = await response.json();
+    console.log(`[STRATEGY] Mistral response received.`);
     const strategyResult = JSON.parse(data.choices[0].message.content);
 
     // Save for Dashboard visibility

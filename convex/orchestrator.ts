@@ -50,6 +50,7 @@ export const executeBrainTurn = action({
     const l2 = await resL2.json();
 
     // 3. BRAIN: Run Strategy Action
+    console.log(`[ORCHESTRATOR] Analyzing ${symbol} with Mistral...`);
     const signal = (await ctx.runAction(api.strategy.runProfessionalStrategy, {
       symbol: symbol,
       l2Data: l2,
@@ -62,6 +63,8 @@ export const executeBrainTurn = action({
       take_profit?: string;
       stop_loss?: string;
     };
+
+    console.log(`[ORCHESTRATOR] Signal generated: ${signal.action} (Confidence: ${signal.confidence})`);
 
     if (signal.action === "WAIT") {
       return { status: "MONITORING", reason: signal.reasoning };
