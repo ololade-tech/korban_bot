@@ -155,7 +155,7 @@ export default function Dashboard() {
             <div className="bg-zinc-900/30 border border-zinc-800 rounded-3xl p-6 flex-1 min-h-[300px] overflow-y-auto">
                <div className="flex items-center gap-2 mb-6">
                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                 <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Neural Engine Active</span>
+                 <span className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em]">Kimi Neural Engine Active</span>
                </div>
                
                <AnimatePresence mode="wait">
